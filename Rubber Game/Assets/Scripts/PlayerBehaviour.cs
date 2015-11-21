@@ -50,6 +50,8 @@ public class PlayerBehaviour : MonoBehaviour
 		currentSpeed = 0;
 		currentHP = maxHP;
 		score = 0;
+		accelerate = false;
+		StartCoroutine (WaitAndMoveAgain (5.0f));
 	}
 	
 	// Update is called once per frame
@@ -223,9 +225,9 @@ public class PlayerBehaviour : MonoBehaviour
 	{
 		accelerate = false;
 		rubberAnimator.SetTrigger ("Telekinesis");
-		StartCoroutine(WaitAndBlowUpRabbit(7.0f, rabbit));
-		StartCoroutine(WaitAndMoveAgain(8.0f));
-		StartCoroutine(WaitAndShakeCamera(1.0f, 6.5f, 0f, 0.0001f));
+		StartCoroutine(WaitAndBlowUpRabbit(9.1f, rabbit));
+		StartCoroutine(WaitAndMoveAgain(10.1f));
+		StartCoroutine(WaitAndShakeCamera(1.0f, 8.6f, 0f, 0.00005f));
 		this.GetComponent<AudioSource> ().Play ();
 	}
 	

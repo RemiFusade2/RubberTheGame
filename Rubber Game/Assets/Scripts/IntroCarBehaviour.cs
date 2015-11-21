@@ -23,7 +23,6 @@ public class IntroCarBehaviour : MonoBehaviour {
 	public int debugStartingStateVoice;
 	public int debugStartingStateScript;
 
-
 	// Use this for initialization
 	void Start () {
 	
@@ -94,5 +93,10 @@ public class IntroCarBehaviour : MonoBehaviour {
 	{
 		yield return new WaitForSeconds (timer);
 		Application.LoadLevel ("sideScrolling");
+	}
+
+	public void PlayCarSound()
+	{
+		this.GetComponent<AudioSource> ().Play ();
 	}
 }
