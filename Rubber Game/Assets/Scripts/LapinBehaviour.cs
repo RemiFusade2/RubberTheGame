@@ -79,7 +79,8 @@ public class LapinBehaviour : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
 	{
-		if (visibleByCamera)
+		PlayerBehaviour playerScript = getPlayerBehaviourScript ();
+		if (visibleByCamera && playerScript != null && !playerScript.gameIsEnding)
 		{
 			if ((qteButtonName.Equals("X") && (Input.GetKeyDown(KeyCode.X) || Input.GetButtonDown("Fire3"))) ||
 			    (qteButtonName.Equals("Y") && (Input.GetKeyDown(KeyCode.Y) || Input.GetButtonDown("Jump"))) ||
@@ -87,7 +88,6 @@ public class LapinBehaviour : MonoBehaviour {
 			 	(qteButtonName.Equals("B") && (Input.GetKeyDown(KeyCode.B) || Input.GetButtonDown("Fire2")))    )
 			{
 				qteButtonTextMesh.text = "";
-				PlayerBehaviour playerScript = getPlayerBehaviourScript();
 				playerScript.SlowDownAndUseTelekinesisOnRabbit(this.gameObject);
 				GameObject bkgMusicEngine = getBkgMusicGameObject();
 				bkgMusicEngine.GetComponent<Animator>().SetBool("MaxVolume", false);

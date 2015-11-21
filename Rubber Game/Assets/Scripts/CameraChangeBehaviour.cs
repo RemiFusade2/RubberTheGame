@@ -10,6 +10,9 @@ public class CameraChangeBehaviour : MonoBehaviour
 	public Animator newCameraAnimator;
 
 	public bool lookup;
+	
+	public GameObject objectToShow;
+	public GameObject objectToHide;
 
 	// Use this for initialization
 	void Start () {
@@ -30,6 +33,14 @@ public class CameraChangeBehaviour : MonoBehaviour
 			if (lookup)
 			{
 				newCameraAnimator.SetTrigger("LookUp");
+			}
+			if (objectToShow != null)
+			{
+				objectToShow.SetActive(true);
+			}
+			if (objectToHide != null)
+			{
+				objectToHide.SetActive(false);
 			}
 		}
 	}

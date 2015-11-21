@@ -57,6 +57,11 @@ public class LevelBuilderScript : MonoBehaviour {
 	public Camera camera2;
 	public Camera camera3;
 	public Camera camera4;
+	public GameObject objectToShowCamera1;
+	public GameObject objectToHideCamera2;
+	
+	public GameObject EndPanel;
+	public Text ScoreText;
 
 	// Use this for initialization
 	void Start () 
@@ -246,8 +251,13 @@ public class LevelBuilderScript : MonoBehaviour {
 			newTile.GetComponent<EndingScript> ().Level = Level;
 			newTile.GetComponent<EndingScript> ().Rubber = Rubber;
 			newTile.GetComponent<EndingScript> ().Trike = Trike;
+
+			newTile.GetComponent<EndingScript> ().objectToShowCamera1 = objectToShowCamera1;
+			newTile.GetComponent<EndingScript> ().objectToHideCamera2 = objectToHideCamera2;
 			newTile.GetComponent<EndingScript> ().SetCameras (camera1, camera2, camera3, camera4);
+
 			newTile.GetComponent<EndingScript> ().stopPlayerScript.playerScript = player.GetComponent<PlayerBehaviour> ();
+			newTile.GetComponent<EndingScript> ().SetEndPanel(EndPanel, ScoreText);
 			
 			tilesPool.Add(newTile);
 		}

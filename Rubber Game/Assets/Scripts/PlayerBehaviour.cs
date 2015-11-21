@@ -27,8 +27,10 @@ public class PlayerBehaviour : MonoBehaviour
 	public float currentHP;
 	public float HPRestoration;
 
+	public GameObject InGameUIPanel;
+
 	public Text scoreText;
-	private int score;
+	public int score;
 
 	public CameraBehaviour currentCamera;
 
@@ -38,11 +40,13 @@ public class PlayerBehaviour : MonoBehaviour
 
 	public LevelBuilderScript levelBuilder;
 
+	public bool gameIsEnding;
+
 	// Use this for initialization
 	void Start () 
 	{
 		playerLaneIndex = lanesPositions.Count / 2;
-		playerIsMoving = false;	
+		playerIsMoving = false;
 		currentSpeed = 0;
 		currentHP = maxHP;
 		score = 0;
@@ -54,12 +58,17 @@ public class PlayerBehaviour : MonoBehaviour
 		if (accelerate)
 		{
 			currentSpeed += acceleration;
-			currentSpeed = (currentSpeed > maxSpeed) ? maxSpeed : currentSpeed;
+			//currentSpeed = (currentSpeed > maxSpeed) ? maxSpeed : currentSpeed;
 		}
 		else
 		{
 			currentSpeed -= deceleration;
 			currentSpeed = (currentSpeed < 0) ? 0 : currentSpeed;
+		}
+
+		if (currentSpeed > maxSpeed)
+		{
+			currentSpeed -= acceleration;
 		}
 
 
@@ -77,7 +86,7 @@ public class PlayerBehaviour : MonoBehaviour
 		this.transform.localPosition += (currentSpeed+currentSpeedBoost) * Vector3.right * Time.deltaTime;
 
 		
-		if (!playerIsMoving)
+		if (!playerIsMoving && !gameIsEnding)
 		{
 			if ((Input.GetKeyDown(KeyCode.DownArrow) || Input.GetAxis("Vertical") < -0.3f) && playerLaneIndex > 0)
 			{
@@ -119,6 +128,11 @@ public class PlayerBehaviour : MonoBehaviour
 	private void UpdateParticleSystem()
 	{
 		float particlesPower = currentSpeed / maxSpeed;
+		particlesPower = (particlesPower > 1) ? 1 : particlesPower;
+		if (rubberIsDead)
+		{
+			particlesPower = 0;
+		}
 		particlesEmitter.emissionRate = 100*particlesPower;
 		particlesEmitter.startSize = 2*particlesPower;
 	}
@@ -143,10 +157,43 @@ public class PlayerBehaviour : MonoBehaviour
 		rubberAnimator.SetTrigger("Hit");
 		currentCamera.Shake (0.5f,0.01f,0);
 
-		if (currentHP <= 0)
+		if (currentHP <= 0 && !gameIsEnding)
 		{
+			gameIsEnding = true;
 			HPRestoration = 0;
 			levelBuilder.AskForEndGame();
+
+			InGameUIPanel.SetActive(false);
+			maxSpeed = 3;
+
+			if (playerLaneIndex > 1)
+			{
+				playerLaneIndex--;
+				playerIsMoving = true;
+				float stepCount = 100;
+				rubberAnimator.SetTrigger("ChangeLaneRight");
+				
+				float deltaPosition = lanesPositions[playerLaneIndex+1] - lanesPositions[playerLaneIndex];
+				
+				for (int i = 0 ; i < stepCount ; i++)
+				{
+					StartCoroutine(WaitAndMovePlayer(timeToChangeLane*(i/stepCount), -(deltaPosition/stepCount)));
+				}
+			}
+			if (playerLaneIndex < 1)
+			{
+				playerLaneIndex++;
+				playerIsMoving = true;
+				float stepCount = 100;
+				rubberAnimator.SetTrigger("ChangeLaneLeft");
+				
+				float deltaPosition = lanesPositions[playerLaneIndex-1] - lanesPositions[playerLaneIndex];
+				
+				for (int i = 0 ; i < stepCount ; i++)
+				{
+					StartCoroutine(WaitAndMovePlayer(timeToChangeLane*(i/stepCount), -(deltaPosition/stepCount)));
+				}
+			}
 		}
 	}
 
@@ -159,6 +206,10 @@ public class PlayerBehaviour : MonoBehaviour
 	public void IncreaseScore(int scoreUp)
 	{
 		score += scoreUp;
+		if (!gameIsEnding)
+		{
+			maxSpeed += 0.1f;
+		}
 		scoreText.text = "Score : " + score;
 	}
 
@@ -209,9 +260,13 @@ public class PlayerBehaviour : MonoBehaviour
 	{
 		accelerate = true;
 	}
+
+	private bool rubberIsDead;
+
 	public void KillRubber()
 	{
 		rubberAnimator.SetTrigger ("Dies");
+		rubberIsDead = true;
 	}
 
 }

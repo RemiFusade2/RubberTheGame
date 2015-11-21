@@ -23,12 +23,22 @@ public class EndingScript : MonoBehaviour
 	public CameraChangeBehaviour cameraChange2;
 	public CameraChangeBehaviour cameraChange3;
 	public StopPlayerScript stopPlayerScript;
+	public GameObject objectToShowCamera1;
+	public GameObject objectToHideCamera2;
 
 	private bool endingStarted;
+
+	public LastSceneScript lastSceneScript;
 
 	void Start()
 	{
 		endingStarted = false;
+	}
+
+	public void SetEndPanel(GameObject endPanel, Text scoreText)
+	{
+		lastSceneScript.EndPanel = endPanel;
+		lastSceneScript.ScoreText = scoreText;
 	}
 
 	public void SetCameras(Camera camera1, Camera camera2, Camera camera3, Camera camera4)
@@ -47,6 +57,9 @@ public class EndingScript : MonoBehaviour
 		cameraChange3.previousCameraAnimator = camera3.GetComponent<Animator> ();
 		cameraChange3.newCamera = camera4;
 		cameraChange3.newCameraAnimator = camera4.GetComponent<Animator> ();
+
+		cameraChange1.objectToShow = objectToShowCamera1;
+		cameraChange2.objectToHide = objectToHideCamera2;
 	}
 
 	void OnTriggerEnter(Collider col)
