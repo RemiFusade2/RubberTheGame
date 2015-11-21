@@ -1,7 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class CollectibleBehaviour : MonoBehaviour {
+
+	public List<AudioClip> listOfSounds;
 
 	// Use this for initialization
 	void Start () {
@@ -17,10 +20,18 @@ public class CollectibleBehaviour : MonoBehaviour {
 	{
 		if (col.tag.Equals("Player"))
 		{
-			this.GetComponent<AudioSource>().Play();
+			PlayBottleCrushSound();
 			this.GetComponent<Animator>().SetTrigger("Crush");
 			PlayerBehaviour playerScript = col.GetComponent<PlayerBehaviour>();
 			playerScript.IncreaseScore(1);
 		}
+	}
+
+	private void PlayBottleCrushSound()
+	{
+		int r = Random.Range (0, listOfSounds.Count);
+		this.GetComponent<AudioSource> ().clip = listOfSounds[r];
+		this.GetComponent<AudioSource>().Play();
+
 	}
 }

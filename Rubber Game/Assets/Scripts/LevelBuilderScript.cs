@@ -45,6 +45,8 @@ public class LevelBuilderScript : MonoBehaviour {
 
 	public GameObject player;
 
+	public AudioSource backgroundAudioSource;
+
 	
 	public GameObject dialoguePanel;
 	public Animator copAnimator;
@@ -62,6 +64,9 @@ public class LevelBuilderScript : MonoBehaviour {
 	
 	public GameObject EndPanel;
 	public Text ScoreText;
+
+	
+	public PlayersSoundEngineScript playersSoundEngine;
 
 	// Use this for initialization
 	void Start () 
@@ -252,9 +257,13 @@ public class LevelBuilderScript : MonoBehaviour {
 			newTile.GetComponent<EndingScript> ().Rubber = Rubber;
 			newTile.GetComponent<EndingScript> ().Trike = Trike;
 
+			newTile.GetComponent<EndingScript> ().SetPlayersAudioScript(playersSoundEngine);
+
 			newTile.GetComponent<EndingScript> ().objectToShowCamera1 = objectToShowCamera1;
 			newTile.GetComponent<EndingScript> ().objectToHideCamera2 = objectToHideCamera2;
 			newTile.GetComponent<EndingScript> ().SetCameras (camera1, camera2, camera3, camera4);
+
+			newTile.GetComponent<EndingScript> ().backgroundMusicAudioSource = backgroundAudioSource;
 
 			newTile.GetComponent<EndingScript> ().stopPlayerScript.playerScript = player.GetComponent<PlayerBehaviour> ();
 			newTile.GetComponent<EndingScript> ().SetEndPanel(EndPanel, ScoreText);

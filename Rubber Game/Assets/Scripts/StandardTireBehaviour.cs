@@ -7,9 +7,12 @@ public class StandardTireBehaviour : MonoBehaviour {
 
 	public float speed;
 
+	public Animator rubberAnimator;
+
 	// Use this for initialization
 	void Start () {
 	
+		rubberAnimator.SetTrigger ("Birth");
 	}
 	
 	// Update is called once per frame

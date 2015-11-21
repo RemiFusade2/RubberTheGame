@@ -10,6 +10,9 @@ public class EndingScript : MonoBehaviour
 	public Animator copAnimator;
 	public Text dialogueTextBox;
 
+	public AudioSource backgroundMusicAudioSource;
+	public AudioClip outroBkgMusic;
+
 	public AudioSource gunFireAudioSource;
 
 	public Animator carAnimator;
@@ -30,9 +33,16 @@ public class EndingScript : MonoBehaviour
 
 	public LastSceneScript lastSceneScript;
 
+	public AttendezPlayersScript attendezPlayersScript;
+
 	void Start()
 	{
 		endingStarted = false;
+	}
+
+	public void SetPlayersAudioScript(PlayersSoundEngineScript playersSoundEngine)
+	{
+		attendezPlayersScript.playersSoundEngine = playersSoundEngine;
 	}
 
 	public void SetEndPanel(GameObject endPanel, Text scoreText)
@@ -75,6 +85,7 @@ public class EndingScript : MonoBehaviour
 	{
 		Debug.Log ("StartEnding");
 		playerScript.StopPlayer ();
+		backgroundMusicAudioSource.GetComponent<Animator> ().SetBool ("MaxVolume", false);
 		dialoguePanel.GetComponent<Animator> ().SetBool ("Visible", true);
 		copAnimator.SetBool ("isTalking", false);
 		StartCoroutine (WaitAndFireGun (1.0f));
@@ -83,7 +94,7 @@ public class EndingScript : MonoBehaviour
 		StartCoroutine (WaitAndCarGoesAway (4.0f));
 
 		float timeToMoveTrike = 2.0f;
-		float timeOffset = 5.0f;
+		float timeOffset = 7.0f;
 		for (int i = 0 ; i < 100 ; i++)
 		{
 			StartCoroutine (WaitAndMoveTrike (timeOffset + timeToMoveTrike * (i/100.0f), 0.05f));
@@ -91,13 +102,25 @@ public class EndingScript : MonoBehaviour
 		StartCoroutine (WaitAndPutRubberInLevel (5.0f));
 		StartCoroutine (WaitAndPutTrikeAsPlayer (timeOffset + timeToMoveTrike));
 		
-		StartCoroutine (WaitAndMovePlayer (timeOffset + timeToMoveTrike + 1.0f));
+		StartCoroutine (WaitAndMovePlayer (timeOffset + timeToMoveTrike + 0.0f));
+		StartCoroutine (WaitAndPlayOutroMusic (timeOffset + timeToMoveTrike + 2.0f));
 	}
+	
+	IEnumerator WaitAndPlayOutroMusic(float timer)
+	{
+		yield return new WaitForSeconds (timer);
+		backgroundMusicAudioSource.clip = outroBkgMusic;
+		backgroundMusicAudioSource.loop = false;
+		backgroundMusicAudioSource.Play ();
+		backgroundMusicAudioSource.GetComponent<Animator> ().SetBool ("MaxVolume", true);
+	}
+
 
 	IEnumerator WaitAndFireGun(float timer)
 	{
 		yield return new WaitForSeconds (timer);
 		gunFireAudioSource.Play ();
+		backgroundMusicAudioSource.Stop ();
 	}
 	
 	IEnumerator WaitAndKillRubber(float timer)

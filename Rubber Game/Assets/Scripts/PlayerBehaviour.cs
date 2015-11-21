@@ -42,6 +42,19 @@ public class PlayerBehaviour : MonoBehaviour
 
 	public bool gameIsEnding;
 
+	public AudioSource rollingLoopAudioSource;
+	public AudioClip rollingLoopTire;
+	public AudioClip rollingLoopTrike;
+	public AudioSource telekinesisAudioSource;
+	public AudioSource chocAudioSource;
+	public List<AudioClip> chocAudioClipList;
+	public AudioSource virageAudioSource;
+	public List<AudioClip> virageAudioClipList;
+
+	public PlayersSoundEngineScript playersSoundEngine;
+
+	public AudioSource bkgAudioSource;
+
 	// Use this for initialization
 	void Start () 
 	{
@@ -51,7 +64,28 @@ public class PlayerBehaviour : MonoBehaviour
 		currentHP = maxHP;
 		score = 0;
 		accelerate = false;
+		StartCoroutine (WaitAndPlayPlayersIntro (3.0f));
+		StartCoroutine (WaitAndGiveLifeToRubber (8.0f));
+		StartCoroutine (WaitAndPutVolumeToMax (12.0f));
+	}
+	
+	IEnumerator WaitAndPlayPlayersIntro(float timer)
+	{
+		yield return new WaitForSeconds (timer);
+		playersSoundEngine.PlayIntro ();
+	}
+
+	IEnumerator WaitAndGiveLifeToRubber(float timer)
+	{
+		yield return new WaitForSeconds (timer);
+		rubberAnimator.SetTrigger ("Birth");
 		StartCoroutine (WaitAndMoveAgain (5.0f));
+	}
+	
+	IEnumerator WaitAndPutVolumeToMax(float timer)
+	{
+		yield return new WaitForSeconds (timer);
+		bkgAudioSource.GetComponent<Animator> ().SetBool ("MaxVolume", true);
 	}
 	
 	// Update is called once per frame
@@ -88,7 +122,7 @@ public class PlayerBehaviour : MonoBehaviour
 		this.transform.localPosition += (currentSpeed+currentSpeedBoost) * Vector3.right * Time.deltaTime;
 
 		
-		if (!playerIsMoving && !gameIsEnding)
+		if (!playerIsMoving && !gameIsEnding && !isUsingTelekinesis)
 		{
 			if ((Input.GetKeyDown(KeyCode.DownArrow) || Input.GetAxis("Vertical") < -0.3f) && playerLaneIndex > 0)
 			{
@@ -96,6 +130,7 @@ public class PlayerBehaviour : MonoBehaviour
 				playerIsMoving = true;
 				float stepCount = 100;
 				rubberAnimator.SetTrigger("ChangeLaneRight");
+				PlayTurnSound();
 				
 				float deltaPosition = lanesPositions[playerLaneIndex+1] - lanesPositions[playerLaneIndex];
 				
@@ -111,6 +146,7 @@ public class PlayerBehaviour : MonoBehaviour
 				playerIsMoving = true;
 				float stepCount = 100;
 				rubberAnimator.SetTrigger("ChangeLaneLeft");
+				PlayTurnSound();
 				
 				float deltaPosition = lanesPositions[playerLaneIndex-1] - lanesPositions[playerLaneIndex];
 				
@@ -125,6 +161,7 @@ public class PlayerBehaviour : MonoBehaviour
 		RestoreHP (HPRestoration);
 		UpdateHPGauge ();
 		UpdateParticleSystem ();
+		UpdateRollingLoopVolume ();
 	}
 
 	private void UpdateParticleSystem()
@@ -137,6 +174,13 @@ public class PlayerBehaviour : MonoBehaviour
 		}
 		particlesEmitter.emissionRate = 100*particlesPower;
 		particlesEmitter.startSize = 2*particlesPower;
+	}
+	
+	private void UpdateRollingLoopVolume()
+	{
+		float volume = currentSpeed / maxSpeed;
+		volume = (volume > 1) ? 1 : volume;
+		rollingLoopAudioSource.volume = volume;
 	}
 	
 	IEnumerator WaitAndMovePlayer(float timer, float delta)
@@ -159,6 +203,8 @@ public class PlayerBehaviour : MonoBehaviour
 		rubberAnimator.SetTrigger("Hit");
 		currentCamera.Shake (0.5f,0.01f,0);
 
+		PlayChocSound ();
+
 		if (currentHP <= 0 && !gameIsEnding)
 		{
 			gameIsEnding = true;
@@ -167,6 +213,8 @@ public class PlayerBehaviour : MonoBehaviour
 
 			InGameUIPanel.SetActive(false);
 			maxSpeed = 3;
+
+			StartCoroutine(WaitAndPlayPlayersOutro(1.0f));
 
 			if (playerLaneIndex > 1)
 			{
@@ -199,6 +247,25 @@ public class PlayerBehaviour : MonoBehaviour
 		}
 	}
 
+	IEnumerator WaitAndPlayPlayersOutro(float timer)
+	{
+		yield return new WaitForSeconds (timer);
+		playersSoundEngine.PlayOutro ();
+	}
+
+	private void PlayChocSound()
+	{
+		int r = Random.Range (0, chocAudioClipList.Count);
+		chocAudioSource.clip = chocAudioClipList [r];
+		chocAudioSource.Play ();
+	}
+	private void PlayTurnSound()
+	{
+		int r = Random.Range (0, virageAudioClipList.Count);
+		virageAudioSource.clip = virageAudioClipList [r];
+		virageAudioSource.Play ();
+	}
+
 	public void RestoreHP(float hpRestore)
 	{
 		currentHP += hpRestore;
@@ -221,14 +288,17 @@ public class PlayerBehaviour : MonoBehaviour
 		HPGaugeGreen.GetComponent<RectTransform> ().SetInsetAndSizeFromParentEdge (RectTransform.Edge.Right, 200 * ratio, 200 - 200 * ratio);
 	}
 
+	private bool isUsingTelekinesis;
+
 	public void SlowDownAndUseTelekinesisOnRabbit(GameObject rabbit)
 	{
 		accelerate = false;
+		isUsingTelekinesis = true;
 		rubberAnimator.SetTrigger ("Telekinesis");
 		StartCoroutine(WaitAndBlowUpRabbit(9.1f, rabbit));
 		StartCoroutine(WaitAndMoveAgain(10.1f));
 		StartCoroutine(WaitAndShakeCamera(1.0f, 8.6f, 0f, 0.00005f));
-		this.GetComponent<AudioSource> ().Play ();
+		telekinesisAudioSource.Play ();
 	}
 	
 	IEnumerator WaitAndBlowUpRabbit(float timer, GameObject rabbit)
@@ -241,6 +311,7 @@ public class PlayerBehaviour : MonoBehaviour
 	{
 		yield return new WaitForSeconds(timer);
 		accelerate = true;
+		isUsingTelekinesis = false;
 	}
 		
 	IEnumerator WaitAndShakeCamera(float timer, float shakingTime, float shakingStartForce, float shakingAcceleration)
@@ -269,6 +340,7 @@ public class PlayerBehaviour : MonoBehaviour
 	{
 		rubberAnimator.SetTrigger ("Dies");
 		rubberIsDead = true;
+		rollingLoopAudioSource.clip = rollingLoopTrike;
+		rollingLoopAudioSource.Play ();
 	}
-
 }

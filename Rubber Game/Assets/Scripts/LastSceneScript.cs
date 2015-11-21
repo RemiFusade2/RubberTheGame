@@ -27,9 +27,9 @@ public class LastSceneScript : MonoBehaviour
 		{
 			score = col.gameObject.GetComponent<PlayerBehaviour>().score;
 			bigCompaniesPictureAnimator.SetBool("Show", true);
-			StartCoroutine(WaitAndShowEndScreen(16.0f, score));
-			StartCoroutine(WaitAndKojimaMesCouilles(18.8f));
-			StartCoroutine(WaitAndEndGame(20.0f));
+			StartCoroutine(WaitAndShowEndScreen(15.0f, score));
+			StartCoroutine(WaitAndKojimaMesCouilles(15.8f));
+			StartCoroutine(WaitAndEndGame(17.0f));
 		}
 	}
 
