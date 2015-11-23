@@ -178,7 +178,7 @@ public class PlayerBehaviour : MonoBehaviour
 	
 	private void UpdateRollingLoopVolume()
 	{
-		float volume = currentSpeed / maxSpeed;
+		float volume = (currentSpeed+acceleration) / maxSpeed;
 		volume = (volume > 1) ? 1 : volume;
 		rollingLoopAudioSource.volume = volume;
 	}
@@ -275,9 +275,13 @@ public class PlayerBehaviour : MonoBehaviour
 	public void IncreaseScore(int scoreUp)
 	{
 		score += scoreUp;
+		if (scoreUp == 1)
+		{
+			playersSoundEngine.PlayScoring();
+		}
 		if (!gameIsEnding)
 		{
-			maxSpeed += 0.1f;
+			maxSpeed += 0.05f;
 		}
 		scoreText.text = "Score : " + score;
 	}

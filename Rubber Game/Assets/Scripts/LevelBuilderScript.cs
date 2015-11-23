@@ -166,9 +166,17 @@ public class LevelBuilderScript : MonoBehaviour {
 		}
 		if (needToCreateTile && !gameIsEnding)
 		{
-			float randomNumber = Random.Range(0, totalWeightOfTiles);
-			float weight = 0;
+			bool tileOK = false;
 			int index = 0;
+			float minValue = 0;
+			float maxValue = totalWeightOfTiles;
+			if (Time.timeSinceLevelLoad < 60.0f)
+			{
+				maxValue -= 4;
+			}
+			float randomNumber = Random.Range(minValue, maxValue);
+			float weight = 0;
+			index = 0;
 			foreach (RandomTile tile in tiles)
 			{
 				if (randomNumber >= weight && randomNumber <= (weight + tile.weight))
@@ -178,6 +186,7 @@ public class LevelBuilderScript : MonoBehaviour {
 				weight += tile.weight;
 				index++;
 			}
+
 			GameObject newTile = (GameObject) Instantiate(tiles[index].tilePrefab, new Vector3(currentTilePosition, 0, 0), Quaternion.identity);
 			newTile.transform.SetParent( levelParent.transform );
 			tilesPool.Add(newTile);

@@ -32,6 +32,5 @@ public class CollectibleBehaviour : MonoBehaviour {
 		int r = Random.Range (0, listOfSounds.Count);
 		this.GetComponent<AudioSource> ().clip = listOfSounds[r];
 		this.GetComponent<AudioSource>().Play();
-
 	}
 }

@@ -14,6 +14,8 @@ public class LapinBehaviour : MonoBehaviour {
 	private GameObject player;
 	private GameObject bkgAudioEngine;
 
+	public Animator BonusAnimator;
+
 	private PlayerBehaviour getPlayerBehaviourScript()
 	{
 		if (player == null)
@@ -113,6 +115,7 @@ public class LapinBehaviour : MonoBehaviour {
 		PlayerBehaviour playerScript = getPlayerBehaviourScript();
 		playerScript.IncreaseScore(10);
 		StartCoroutine (WaitAndPutVolumeToMax (1.0f));
+		BonusAnimator.SetTrigger("BonusShows");
 	}
 
 	IEnumerator WaitAndPutVolumeToMax(float timer)
