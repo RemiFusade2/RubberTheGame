@@ -69,7 +69,7 @@ public class IntroCarBehaviour : MonoBehaviour {
 			copAnimator.SetBool("isTalking", false);
 			audioEngine.Stop();
 			introPanelAnimator.SetBool ("Visible", false);
-			StartCoroutine(WaitAndStartGame(1.0f));
+			StartCoroutine(WaitAndShowLoadingScreen(1.0f));
 		}
 	}
 
@@ -87,6 +87,15 @@ public class IntroCarBehaviour : MonoBehaviour {
 		{
 			UIMessageText.text = "";
 		}
+	}
+
+	public GameObject loadingScreen;
+	
+	IEnumerator WaitAndShowLoadingScreen(float timer)
+	{
+		yield return new WaitForSeconds (timer);
+		loadingScreen.SetActive (true);
+		StartCoroutine(WaitAndStartGame(2.0f));
 	}
 
 	IEnumerator WaitAndStartGame(float timer)

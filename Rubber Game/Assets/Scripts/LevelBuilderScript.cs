@@ -172,7 +172,7 @@ public class LevelBuilderScript : MonoBehaviour {
 			float maxValue = totalWeightOfTiles;
 			if (Time.timeSinceLevelLoad < 60.0f)
 			{
-				maxValue -= 4;
+				maxValue -= 1;
 			}
 			float randomNumber = Random.Range(minValue, maxValue);
 			float weight = 0;

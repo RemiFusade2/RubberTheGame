@@ -107,7 +107,7 @@ public class PlayerBehaviour : MonoBehaviour
 			currentSpeed -= acceleration;
 		}
 
-
+		/*
 		if (Input.GetKeyDown(KeyCode.Space))
 		{
 			currentSpeedBoost = maxSpeedBoost;
@@ -117,12 +117,13 @@ public class PlayerBehaviour : MonoBehaviour
 			currentSpeedBoost -= deceleration;
 			currentSpeedBoost = (currentSpeedBoost < 0) ? 0 : currentSpeedBoost;
 		}
+		*/
 
 		
 		this.transform.localPosition += (currentSpeed+currentSpeedBoost) * Vector3.right * Time.deltaTime;
 
 		
-		if (!playerIsMoving && !gameIsEnding && !isUsingTelekinesis)
+		if (!playerIsMoving && !gameIsEnding && !isUsingTelekinesis && currentSpeed > 0)
 		{
 			if ((Input.GetKeyDown(KeyCode.DownArrow) || Input.GetAxis("Vertical") < -0.3f) && playerLaneIndex > 0)
 			{
